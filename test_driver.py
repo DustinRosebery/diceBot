@@ -18,5 +18,5 @@ def process(message):
 			return
 
 if __name__ == "__main__":
-	testInput = "!roll 2d20+2"
+	testInput = "!roll 2d20 +2"
 	process(testInput)

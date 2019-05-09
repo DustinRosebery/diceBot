@@ -52,9 +52,11 @@ class Command:
 			# parse roll parameters and get rolls
 			print("ValueCommand: " + str(valueCommand))
 			print("ValueCommand Length: " + str(len(valueCommand)))
+			# if numRolls not present -> ex; !roll d20
 			if not valueCommand[0]:
 				valueCommand[0] = 1
 				self.params[0] = dice.getRolls(int(valueCommand[0]), int(valueCommand[1]))
+			# if numRolls is present -> ex; !roll 3d10
 			elif len(valueCommand) == 2:
 				self.params[0] = dice.getRolls(int(valueCommand[0]), int(valueCommand[1]))
 			else:
@@ -62,8 +64,10 @@ class Command:
 				return False
 
 			# parse modifier
+			# if no modifier present
 			if len(command) == 1:
 				self.params[1] = 0
+			# if the modifier portion doesn't have a space -> ex; !roll d20 +2
 			elif len(command) == 2:
 				rawMod = command[1]
 				print("RawMod: " + rawMod)
@@ -73,6 +77,7 @@ class Command:
 					print("found negative modifier")
 					self.params[1] = self.params[1] * -1
 				print("Params[1] after negative: " + str(self.params[1]))
+			# if the modifier portion does have a space -> ex; !roll d20 + 2
 			elif len(command) == 3:
 				self.params[1] = int(command[2])
 				if "-" in command[1]:
