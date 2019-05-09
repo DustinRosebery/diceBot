@@ -88,6 +88,6 @@ class Command:
 			print("Total: " + str(self.params[2]))
 
 		except Exception as ex:
-			self.errorMsg.append(str(ex))
+			self.errorMsg = type(ex).__name__ + ": " + str(ex) + "\nTry !help for more info"
 			return False
 		return True

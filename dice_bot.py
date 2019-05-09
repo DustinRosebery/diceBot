@@ -43,4 +43,5 @@ async def on_message(message):
 			await message.channel.send(nickname + " rolled: " + str(command.params[0]) + " -> " + str(command.params[2]))
 			return
 
-client.run(TOKEN)
+if __name__ == "__main__":
+	client.run(TOKEN)
