@@ -25,6 +25,10 @@ async def on_message(message):
 	if message.author == client.user:
 		return
 
+	# kill command
+	if message.content == "!!!":
+		sys.exit(0)
+
 	# process message
 	if message.content[0] == "!":
 		print("Message Recieved from " + nickname + ": " + message.content)

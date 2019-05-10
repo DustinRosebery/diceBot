@@ -14,9 +14,9 @@ def process(message):
 
 		# ROLL
 		if command.action == "roll":
-			print("Driver roll: " + str(command.params[0]) + " -> " + str(command.params[2]))
+			print("Driver roll: " + str(command.rolls) + " -> " + str(command.total))
 			return
 
 if __name__ == "__main__":
-	testInput = "!roll 2d20 +2"
+	testInput = "!roll 2d20 + 2"
 	process(testInput)
