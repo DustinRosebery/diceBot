@@ -1,7 +1,8 @@
 import dice_logic as dice
 
 """
-	This class takes a raw command from discord and returns a list of parsed command objects
+	This class takes a raw command from discord and processes the input into a command object
+	If the command is successfully processed, command.isValid = True, else False
 """
 class Command:
 
