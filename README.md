@@ -1,21 +1,21 @@
-# diceBot
+# DiceBot
 Dice Roller Bot for Discord
 
 
-## Versions
+### Versions
 
 - python: 3.7.3
 - discord: 1.0.1
 
 
-## Commands
+### Commands
 
 commands to this bot start with '!'
 (you can modify this in dice_bot.py by changing the botChar variable)
 - !roll 2d20 -> would roll 2 20 sided dice and return the individual results [11, 15] and the total 26
 
-you can include modifiers for the total
-- !roll 2d20 +2 -> still return the individual rolls, as well as the total adjusted by the modifier (+/-)
+you can include +/- modifiers that will adjust the roll total
+- !roll 2d20 +2 -> still returns the individual rolls, as well as the total adjusted by the modifier
 
 For "in-game" help, type: !help
 
@@ -25,19 +25,19 @@ For "in-game" help, type: !help
 
 
 
-## Installation Help
+### Installation Help
 
 To run this as your own bot, you will need to create a new bot at https://discordapp.com/developers/applications/
 add the generated authorization TOKEN, and the filepath to your discord module in a NEW local file named: 
 
-'bot_credentials.py'
+`bot_credentials.py`
 
-'''python
+```python
 class credentials:
 	def __init__(self):
 		self.TOKEN = 'YOUR_BOTS_AUTH_TOKEN' 
 		self.DISCORD_PATH = 'PATH_TO_DISCORD_MODULE'
-'''
+```
 
 Finally, you need to go to https://discordapp.com/oauth2/authorize?client_id=XXXXXXXXXXXXXXXX&scope=bot (replace XXXXXXXXXXXXXXXXXX with your bots client_id)
 and add the bot to a discord server that you have admin priveleges on.
