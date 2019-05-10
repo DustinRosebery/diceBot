@@ -47,18 +47,22 @@ async def on_message(message):
 		sys.exit(0)
 	# process message
 	if message.content[0] == botChar:
-		print("Message Recieved from " + nickname + ": " + message.content)
+		print("\nMessage Recieved from " + nickname + ": " + message.content)
 		command = cp.Command(message.content)
 
 		# send processed command message
 		if not command.isValid:
 			await message.channel.send(command.errorMsg)
+			print("Sent Error Message to: " + nickname + " -> " + command.errorMsg)
 			return
 		if command.action == "help":
 			await message.channel.send(command.helpMsg)
+			print("Sent Help Message to: " + nickname)
 			return
 		if command.action == "roll":
-			await message.channel.send(nickname + " rolled: " + str(command.rolls) + " -> " + str(command.total))
+			rollMsg = nickname + " rolled: " + str(command.rolls) + " -> " + str(command.total)
+			await message.channel.send(rollMsg)
+			print(rollMsg)
 			return
 
 # Runs the bot using the unique discord generated auth token
