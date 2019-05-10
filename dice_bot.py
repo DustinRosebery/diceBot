@@ -1,18 +1,36 @@
+"""
+	dice_bot handles discord interactions with the bot
+
+	TOKEN and DISCORD_PATH not included in public repo
+	add bot_credentails.py to your local directory including these.
+	for more information, see README.md
+"""
+import bot_credentials as bc
+credentials = bc.credentials()
+
 import sys
-sys.path.insert(0, 'C:\\Users\\Dlros\\AppData\\Local\\Programs\\Python\\Python37\\lib\\site-packages')
+sys.path.insert(0, credentials.DISCORD_PATH)
+
 import discord
 import random
 import command_parser as cp
 
-TOKEN = 'NTc1MTI4NTY4ODQ2MDkwMjcy.XNEIrg.fgX9oZnNAynl-jG1mBmtM4-A6jc'
+# Starting character the bot looks for to process a server message
+botChar = "!"
  
 # BOT client events
 client = discord.Client()
 
+"""
+	Bot Startup
+"""
 @client.event
 async def on_ready():
-    print("Ready To Roll!!")
+    print("Ready To Roll!")
 
+"""
+	Process messages from the discord server
+"""
 @client.event
 async def on_message(message):
 	# set message parameters
@@ -24,28 +42,25 @@ async def on_message(message):
 	# don't let the bot talk to itself
 	if message.author == client.user:
 		return
-
 	# kill command
 	if message.content == "!!!":
 		sys.exit(0)
-
 	# process message
-	if message.content[0] == "!":
+	if message.content[0] == botChar:
 		print("Message Recieved from " + nickname + ": " + message.content)
 		command = cp.Command(message.content)
 
+		# send processed command message
 		if not command.isValid:
 			await message.channel.send(command.errorMsg)
 			return
-
 		if command.action == "help":
 			await message.channel.send(command.helpMsg)
 			return
-
-		# ROLL
 		if command.action == "roll":
-			await message.channel.send(nickname + " rolled: " + str(command.params[0]) + " -> " + str(command.params[2]))
+			await message.channel.send(nickname + " rolled: " + str(command.rolls) + " -> " + str(command.total))
 			return
 
+# Runs the bot using the unique discord generated auth token
 if __name__ == "__main__":
-	client.run(TOKEN)
+	client.run(credentials.TOKEN)
