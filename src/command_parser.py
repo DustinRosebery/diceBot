@@ -1,4 +1,7 @@
 import dice_logic as dice
+import re
+
+debug = False
 
 """
 	This class takes a raw command from discord and processes the input into a command object
@@ -10,91 +13,91 @@ class Command:
 	tryHelp = "\nTry !help for more info"
 
 	"""
-		Create a command object with attributes
-		   	- str: action
-		   	- boolean: isValid -> is this a valid roll command?
-			- str: errorMsg
-			- str: helpMsg
-			- str: tryHelp
-
-		Unique ROLL attributes
-			- int: modifer
-			- int: total
-			- []: rolls
+		Create default command object
 	"""
-	def __init__(self, rawCommand):
-		print("Raw Command: " + str(rawCommand))
-		action = ""
-		isValid = False
-		errorMsg = "Unhandled Command Exception\nTry !help for more info"
-
-		command = rawCommand.split(" ")
-		if "roll" in command[0].lower() or "rolls" in command[0].lower():
-			self.action = "roll"
-			self.modifer = 0
-			self.total = 0
-			self.rolls = []
-			self.isValid = self.getRollParameters(command)
-
-		elif "help" in command[0].lower():
-			self.action = "help"
-			self.isValid = True
+	def __init__(self):
+		self.action = ""
+		self.numRolls = 1
+		self.diceSize = 20
+		self.rolls = []
+		self.modifierSign = "+"
+		self.modifier = 0
+		self.total = 0
+		self.isValid = False
 
 	"""
-		Sets the params for the roll command
-		Params -> modifer, rolls, and total
-		Returns -> True if the command is valid, else False
+		Parse the command action, and process the commands
+		Regex parser groups
+		- group 1: modified roll action
+		- group 2: numRolls
+		- group 3: diceSize
+		- group 4: modifier sign
+		- group 5: modifier
+		- group 6: help kill, or basic roll actions
 	"""
-	def getRollParameters(self, rawCommand):
+	def parseCommand(self, rawCommand):
+
+		#define the regex match
+		exp = re.compile("^!(roll|rolls)\\s?(\\d+)?d(\\d+)\\s?([-+])?\\s?(\\d+)?|^!(help|kill|roll)\\s?$")
+		regex = exp.match(str(rawCommand))
+		print("Regex Type: " + str(type(regex)))
+		# catch improper input 
+		if not regex:
+			self.errorMsg = "Invalid Input: " + str(rawCommand) + self.tryHelp
+			return
+		if debug:
+			print("Group 1: " + str(regex.group(1)))
+			print("Group 2: " + str(regex.group(2)))
+			print("Group 3: " + str(regex.group(3)))
+			print("Group 4: " + str(regex.group(4)))
+			print("Group 5: " + str(regex.group(5)))
+			print("Group 6: " + str(regex.group(6)))
+
+		# parse the action
+		if regex.group(6):
+			if regex.group(6) == "help":
+				self.setHelpCommand()
+			elif regex.group(6) == "kill":
+				self.setKillCommand()
+			elif regex.group(6) == "roll":
+				self.parseRollCommand(regex)
+			else:
+				self.errorMsg = "Invalid Command" + self.tryHelp
+		elif regex.group(1) == "roll":
+			self.parseRollCommand(regex)
+		else:
+			self.errorMsg = "Invalid Command" + self.tryHelp
+		
+	"""
+		Parse the roll command and assign attributes
+	"""
+	def parseRollCommand(self, regex):
+		self.action = "roll"
 		try:
-			command = rawCommand[1:]
-
-			# parse modifier
-			try:
-				print("Mod Command: " + str(command))
-				lastIndex = len(command) - 1
-				# accounts for spaces between rollValue, +/- symbol, and modifier value
-				if len(command) == 3:
-					command[2] = command[1] + command[2]
-				if "-" in str(command):
-					modAmount = int(command[lastIndex].split("-")[1]) * -1
-					command = command[0].split("-")
-					print("Modifer: " + str(modAmount))
-					self.modifier = modAmount
-				elif "+" in str(command):
-					modAmount = int(command[lastIndex].split("+")[1])
-					command = command[0].split("+")
-					print("Modifier: " + str(modAmount))
-					self.modifier = modAmount
-				else:
-					self.modifier = 0		
-			except Exception as modEx:
-				self.errorMsg = "Invalid Modifier Value: " + str(command) + self.tryHelp		
-				return False
-
-			# parse roll parameters and get roll values
-			try:
-				command = command[0].split("d")
-				print("Roll Command: " + str(command))
-				# accounts for numRolls present AND missing, ex; !roll 3d20 AND !roll d20
-				if not command[0]:
-					command[0] = 1
-					self.rolls = dice.getRolls(int(command[0]), int(command[1]))
-				elif len(command) == 2:
-					self.rolls = dice.getRolls(int(command[0]), int(command[1]))
-				else:
-					self.errorMsg = "Invalid Roll Value: " + str(command) + self.tryHelp
-					return False
-			except Exception as valueEx:
-				self.errorMsg = "Invalid Roll Value: " + str(command) + self.tryHelp
-				return False
-
-			# get total
-			self.total = (dice.getRollSum(self.rolls, len(self.rolls)) + self.modifier)
-
+			self.numRolls = int(regex.group(2)) if regex.group(2) else 1
+			self.diceSize = int(regex.group(3)) if regex.group(3) else 20
+			self.rolls = dice.getRolls(self.numRolls, self.diceSize)
+			if regex.group(4):
+				self.modifierSign = "-" if regex.group(4) == "-" else "+"
+				self.modifier = int(regex.group(5)) * -1 if int(regex.group(4) == "-") else int(regex.group(5))
+			self.total = int(dice.getRollSum(self.rolls, len(self.rolls))) + self.modifier
+			self.isValid = True
 		except Exception as ex:
-			self.errorMsg = type(ex).__name__ + ": " + str(ex) + self.tryHelp
-			return False
+			self.errorMsg = "Invalid Roll" + self.tryHelp
+			return
 
-		# returns isValid = True
-		return True
+		self.isValid = True
+
+	"""
+		Set kill command attributes
+	"""
+	def setKillCommand(self):
+		self.action = "kill"
+		self.isValid = True
+
+	"""
+		Set help command attributes
+	"""
+	def setHelpCommand(self):
+		self.action = "help"
+		self.isValid = True

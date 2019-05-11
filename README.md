@@ -9,19 +9,26 @@ Dice Roller Bot for Discord
 
 ### Commands
 
-Commands to this bot start with '!' (you can modify this in dice_bot.py by changing the botChar variable)
-- !roll 2d20 -> would roll 2 20 sided dice and return the individual results [11, 15] and the total 26
+Commands start with '!' 
+- change this with botChar in dice_bot.py
 
-You can include +/- modifiers that will adjust the roll total
-- !roll 2d20 +2 -> still returns the individual rolls, as well as the total adjusted by the modifier
+Roll -> returns individual rolls results and the total adjusted by the modifier
+- !roll (rolls 1d20)
+- !roll d6
+- !roll 2d20
+- !roll 2d20 +2
+- !roll d100-40
+- Roll commands are parsed with regex and can handle *most* inputs of these types
 
-For "in-game" help
-- !help -> displays the help menu
 
-There is a kill command
-- !!! -> kills all diceBots, useful if you have multiple instances running and can't find the process
+Help -> displays the help message
+- !help
 
-*OR* use test_driver.py to test input command parsing without blowing up a public discord server :)
+Kill -> terminates the bot
+- !kill 
+- Only the bot owner can run this command, set botOwner in dice_bot.py
+
+**You can use test_driver.py to test input command parsing without blowing up a public discord server :)**
 
 ### Installation Help
 
